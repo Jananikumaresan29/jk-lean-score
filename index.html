@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Lean Score Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <canvas id="confettiCanvas"></canvas>
+    <div class="floating-particles" id="particles"></div>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1>My Lean Score Dashboard</h1>
+                <p class="subtitle">Your personal Lean coach for Flight Deck discipline</p>
+            </div>
+            <div class="header-controls">
+                <div class="target-setting">
+                    <label for="targetScore">Target:</label>
+                    <input type="number" id="targetScore" min="0" max="100" value="85">
+                    <span>%</span>
+                </div>
+                <div class="mode-toggles">
+                    <button class="toggle-btn active" id="normalModeBtn" title="Normal View">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/></svg>
+                        <span>Normal</span>
+                    </button>
+                    <button class="toggle-btn" id="compactModeBtn" title="Compact View">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+                        <span>Compact</span>
+                    </button>
+                </div>
+                <div class="frequency-toggle">
+                    <button class="freq-btn active" id="dailyBtn">Daily</button>
+                    <button class="freq-btn" id="weeklyBtn">Weekly</button>
+                </div>
+            </div>
+        </header>
+
+        <section class="input-section">
+            <h2 class="section-title">
+                <span id="entryTitle">Daily Entry</span>
+                <span class="entry-date" id="entryDate"></span>
+            </h2>
+            <div class="input-grid">
+                <div class="input-card stagger-in" style="--stagger: 0">
+                    <div class="card-icon">📚</div>
+                    <h3>Lean Training Time</h3>
+                    <p class="card-desc">Hours spent on Lean training <span class="freq-label">today</span></p>
+                    <div class="input-group">
+                        <input type="number" id="trainingHours" min="0" max="10" step="0.5" placeholder="0">
+                        <span class="input-suffix">hrs / <span class="max-training">2</span></span>
+                    </div>
+                    <input type="range" id="trainingSlider" min="0" max="2" step="0.5" value="0">
+                </div>
+
+                <div class="input-card stagger-in" style="--stagger: 1">
+                    <div class="card-icon">📋</div>
+                    <h3>Standard Work Adherence</h3>
+                    <p class="card-desc">Did you follow your documented process <span class="freq-label">today</span>?</p>
+                    <div class="input-group">
+                        <input type="number" id="standardWork" min="0" max="100" step="1" placeholder="0">
+                        <span class="input-suffix">%</span>
+                    </div>
+                    <input type="range" id="standardWorkSlider" min="0" max="100" step="1" value="0">
+                </div>
+
+                <div class="input-card stagger-in" style="--stagger: 2">
+                    <div class="card-icon">📊</div>
+                    <h3>Daily Management Discipline</h3>
+                    <p class="card-desc">Standups attended & KPIs updated on time</p>
+                    <div class="input-group">
+                        <input type="number" id="dailyManagement" min="0" max="100" step="1" placeholder="0">
+                        <span class="input-suffix">%</span>
+                    </div>
+                    <input type="range" id="dailyManagementSlider" min="0" max="100" step="1" value="0">
+                </div>
+
+                <div class="input-card stagger-in" style="--stagger: 3">
+                    <div class="card-icon">✅</div>
+                    <h3>Problem Solving / Action Closure</h3>
+                    <p class="card-desc">Actions handled vs actions closed</p>
+                    <div class="input-row">
+                        <div class="input-group small">
+                            <label>Total Actions</label>
+                            <input type="number" id="totalActions" min="0" step="1" placeholder="0">
+                        </div>
+                        <div class="input-group small">
+                            <label>Closed Actions</label>
+                            <input type="number" id="closedActions" min="0" step="1" placeholder="0">
+                        </div>
+                    </div>
+                    <div id="actionMessage" class="action-message hidden">Add actions to track execution</div>
+                </div>
+
+                <div class="input-card stagger-in" style="--stagger: 4">
+                    <div class="card-icon">💡</div>
+                    <h3>Kaizen / Improvement Ideas</h3>
+                    <p class="card-desc">Ideas submitted <span class="freq-label">today</span> to improve your work</p>
+                    <div class="input-row">
+                        <div class="input-group small">
+                            <label>Ideas Submitted</label>
+                            <input type="number" id="kaizenSubmitted" min="0" step="1" placeholder="0">
+                        </div>
+                        <div class="input-group small">
+                            <label>Ideas Implemented</label>
+                            <input type="number" id="kaizenImplemented" min="0" step="1" placeholder="0">
+                        </div>
+                    </div>
+                    <p class="card-hint">Target: <span class="kaizen-target">1+ idea/day</span>. Even small improvements count!</p>
+                </div>
+
+                <div class="input-card stagger-in" style="--stagger: 5">
+                    <div class="card-icon">🧹</div>
+                    <h3>Waste Elimination & 5S Discipline</h3>
+                    <p class="card-desc">Track waste spotted and workspace discipline</p>
+                    <div class="waste-checklist">
+                        <p class="checklist-title">DOWNTIME — Waste identified <span class="freq-label">today</span>:
+                            <button class="downtime-help-btn" id="downtimeHelpBtn" title="Learn how to spot waste">?</button>
+                        </p>
+                        <div class="checklist-grid">
+                            <label class="check-item" data-waste="defects"><input type="checkbox" id="wasteDefects"> <span>Defects</span></label>
+                            <label class="check-item" data-waste="overproduction"><input type="checkbox" id="wasteOverproduction"> <span>Overproduction</span></label>
+                            <label class="check-item" data-waste="waiting"><input type="checkbox" id="wasteWaiting"> <span>Waiting</span></label>
+                            <label class="check-item" data-waste="nonutilized"><input type="checkbox" id="wasteNonUtilized"> <span>Non-utilized talent</span></label>
+                            <label class="check-item" data-waste="transport"><input type="checkbox" id="wasteTransport"> <span>Transportation</span></label>
+                            <label class="check-item" data-waste="inventory"><input type="checkbox" id="wasteInventory"> <span>Inventory</span></label>
+                            <label class="check-item" data-waste="motion"><input type="checkbox" id="wasteMotion"> <span>Motion</span></label>
+                            <label class="check-item" data-waste="extraprocessing"><input type="checkbox" id="wasteExtraProcessing"> <span>Extra-processing</span></label>
+                        </div>
+                    </div>
+                    <div class="input-group" style="margin-top: 12px">
+                        <label style="font-size:0.75rem; color:#5f6368; min-width:120px">5S Self-Score</label>
+                        <input type="number" id="fiveSScore" min="0" max="100" step="5" placeholder="0">
+                        <span class="input-suffix">%</span>
+                    </div>
+                    <input type="range" id="fiveSSlider" min="0" max="100" step="5" value="0">
+                    <p class="card-hint">5S: Sort, Set in order, Shine, Standardize, Sustain</p>
+                </div>
+            </div>
+
+            <button id="calculateBtn" class="calculate-btn">
+                <span>Calculate My Lean Score</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+            </button>
+        </section>
+
+        <section id="resultsSection" class="results-section hidden">
+            <div class="motivational-quote" id="motivationalQuote"></div>
+            <div class="results-grid">
+                <div class="score-card">
+                    <h2>Your Lean Score</h2>
+                    <div class="gauge-container">
+                        <svg class="gauge" viewBox="0 0 200 200">
+                            <circle class="gauge-bg" cx="100" cy="100" r="85"/>
+                            <circle class="gauge-fill" cx="100" cy="100" r="85" id="gaugeFill"/>
+                            <circle class="gauge-target" cx="100" cy="100" r="75" id="gaugeTarget"/>
+                        </svg>
+                        <div class="gauge-text">
+                            <span class="score-value" id="scoreValue">0</span>
+                            <span class="score-percent">%</span>
+                        </div>
+                    </div>
+                    <div class="streak-counter hidden" id="streakCounter"></div>
+                    <div class="performance-badge" id="performanceBadge">
+                        <span class="badge-icon"></span>
+                        <span class="badge-text"></span>
+                    </div>
+                    <div class="improvement-msg hidden" id="improvementMsg"></div>
+                </div>
+
+                <div class="breakdown-card">
+                    <h2>Score Breakdown</h2>
+                    <div class="chart-container">
+                        <div class="bar-chart">
+                            <div class="bar-item">
+                                <div class="bar-label">Training</div>
+                                <div class="bar-track">
+                                    <div class="bar-fill" id="barTraining" data-value="0"></div>
+                                </div>
+                                <div class="bar-value" id="valTraining">0%</div>
+                            </div>
+                            <div class="bar-item">
+                                <div class="bar-label">Standard Work</div>
+                                <div class="bar-track">
+                                    <div class="bar-fill" id="barStandard" data-value="0"></div>
+                                </div>
+                                <div class="bar-value" id="valStandard">0%</div>
+                            </div>
+                            <div class="bar-item">
+                                <div class="bar-label">Daily Mgmt</div>
+                                <div class="bar-track">
+                                    <div class="bar-fill" id="barDaily" data-value="0"></div>
+                                </div>
+                                <div class="bar-value" id="valDaily">0%</div>
+                            </div>
+                            <div class="bar-item">
+                                <div class="bar-label">Action Closure</div>
+                                <div class="bar-track">
+                                    <div class="bar-fill" id="barAction" data-value="0"></div>
+                                </div>
+                                <div class="bar-value" id="valAction">0%</div>
+                            </div>
+                            <div class="bar-item">
+                                <div class="bar-label">Kaizen Ideas</div>
+                                <div class="bar-track">
+                                    <div class="bar-fill" id="barKaizen" data-value="0"></div>
+                                </div>
+                                <div class="bar-value" id="valKaizen">0%</div>
+                            </div>
+                            <div class="bar-item">
+                                <div class="bar-label">Waste / 5S</div>
+                                <div class="bar-track">
+                                    <div class="bar-fill" id="barWaste" data-value="0"></div>
+                                </div>
+                                <div class="bar-value" id="valWaste">0%</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="weight-legend">
+                        <span>Training: 15%</span>
+                        <span>Std Work: 15%</span>
+                        <span>Daily Mgmt: 15%</span>
+                        <span>Actions: 25%</span>
+                        <span>Kaizen: 15%</span>
+                        <span>Waste/5S: 15%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="suggestions-card" id="suggestionsCard">
+                <h2>💡 Your Lean Coach Says...</h2>
+                <div class="suggestions-list" id="suggestionsList"></div>
+            </div>
+
+            <div class="trend-card">
+                <h2 id="trendTitle">📈 Recent Trend</h2>
+                <div class="trend-container">
+                    <canvas id="trendCanvas" width="600" height="200"></canvas>
+                </div>
+                <div class="trend-legend">
+                    <span class="legend-score">● Lean Score</span>
+                    <span class="legend-target">● Target</span>
+                </div>
+            </div>
+
+            <div class="history-card">
+                <h2 id="historyTitle">📅 History</h2>
+                <div class="history-list" id="historyList">
+                    <p class="no-history">No history yet. Start tracking your Lean journey!</p>
+                </div>
+                <button id="clearHistoryBtn" class="clear-btn hidden">Clear History</button>
+            </div>
+
+            <div class="reference-card">
+                <h2>📖 How Waste Score is Calculated</h2>
+                <div class="reference-content">
+                    <div class="formula-box">
+                        <p class="formula-title">Waste/5S Score Formula:</p>
+                        <code>Waste Score = (DOWNTIME Awareness × 0.40) + (5S Self-Score × 0.60)</code>
+                    </div>
+                    <div class="formula-detail">
+                        <p><strong>DOWNTIME Awareness (40%)</strong> — Each waste type you identify = 12.5%. Spotting all 8 = 100%.</p>
+                        <p><strong>5S Self-Score (60%)</strong> — Rate your workspace discipline honestly:</p>
+                    </div>
+                    <table class="reference-table">
+                        <thead>
+                            <tr><th>5S Pillar</th><th>Ask Yourself</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><strong>Sort</strong></td><td>Did I remove unnecessary items from my workspace?</td></tr>
+                            <tr><td><strong>Set in Order</strong></td><td>Is everything in a designated, labeled place?</td></tr>
+                            <tr><td><strong>Shine</strong></td><td>Is my workspace clean and inspection-ready?</td></tr>
+                            <tr><td><strong>Standardize</strong></td><td>Am I following the agreed-upon standards daily?</td></tr>
+                            <tr><td><strong>Sustain</strong></td><td>Am I maintaining these habits without reminders?</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="downtime-guide">
+                        <p class="formula-title">DOWNTIME — 8 Wastes Guide:</p>
+                        <div class="waste-grid">
+                            <div class="waste-item"><span class="waste-letter">D</span> Defects — Errors, rework, corrections, failed handoffs</div>
+                            <div class="waste-item"><span class="waste-letter">O</span> Overproduction — Doing more than what's needed right now</div>
+                            <div class="waste-item"><span class="waste-letter">W</span> Waiting — Idle time waiting for approvals, info, or systems</div>
+                            <div class="waste-item"><span class="waste-letter">N</span> Non-utilized talent — Underused skills, people doing below their capability</div>
+                            <div class="waste-item"><span class="waste-letter">T</span> Transportation — Unnecessary movement of materials, files, or data</div>
+                            <div class="waste-item"><span class="waste-letter">I</span> Inventory — Excess stock, backlog, unread emails piling up</div>
+                            <div class="waste-item"><span class="waste-letter">M</span> Motion — Unnecessary physical/digital movement by people</div>
+                            <div class="waste-item"><span class="waste-letter">E</span> Extra-processing — Adding steps or detail beyond what's required</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- DOWNTIME Helper Modal -->
+    <div class="modal-overlay hidden" id="downtimeModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>🔍 DOWNTIME Waste Spotter</h2>
+                <p>Use these prompts to identify waste in your daily work</p>
+                <button class="modal-close" id="modalClose">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="waste-helper-card" data-letter="D">
+                    <div class="helper-header">
+                        <span class="waste-letter">D</span>
+                        <h3>Defects</h3>
+                    </div>
+                    <p class="helper-question">🤔 Ask yourself:</p>
+                    <ul>
+                        <li>Did I have to redo or correct any work today?</li>
+                        <li>Were there errors in data, reports, or deliverables?</li>
+                        <li>Did I receive unclear or wrong information from someone?</li>
+                    </ul>
+                    <p class="helper-tip">💡 <strong>Tip:</strong> Keep a quick tally of how many times you fix something that should have been right the first time.</p>
+                    <div class="helper-examples">
+                        <strong>Examples:</strong> Typos in reports, wrong data in spreadsheets, rework after review, miscommunication causing redo
+                    </div>
+                </div>
+
+                <div class="waste-helper-card" data-letter="O">
+                    <div class="helper-header">
+                        <span class="waste-letter">O</span>
+                        <h3>Overproduction</h3>
+                    </div>
+                    <p class="helper-question">🤔 Ask yourself:</p>
+                    <ul>
+                        <li>Did I create more than what was actually needed?</li>
+                        <li>Did I send reports/updates nobody reads?</li>
+                        <li>Am I attending meetings that don't need me?</li>
+                    </ul>
+                    <p class="helper-tip">💡 <strong>Tip:</strong> Before starting any task, ask "Who needs this and when?" If the answer is unclear, you might be overproducing.</p>
+                    <div class="helper-examples">
+                        <strong>Examples:</strong> CC'ing everyone on emails, creating 20-page reports when 2 pages suffice, pre-making materials "just in case"
+                    </div>
+                </div>
+
+                <div class="waste-helper-card" data-letter="W">
+                    <div class="helper-header">
+                        <span class="waste-letter">W</span>
+                        <h3>Waiting</h3>
+                    </div>
+                    <p class="helper-question">🤔 Ask yourself:</p>
+                    <ul>
+                        <li>Was I idle at any point waiting for someone/something?</li>
+                        <li>Did a slow system or approval delay my work?</li>
+                        <li>Was I stuck because information wasn't available?</li>
+                    </ul>
+                    <p class="helper-tip">💡 <strong>Tip:</strong> Track wait times in 15-min blocks. You'll be surprised how much of your day is "waiting for X." This is usually the biggest waste for office workers.</p>
+                    <div class="helper-examples">
+                        <strong>Examples:</strong> Waiting for manager approval, slow software loading, queued for a shared resource, blocked by late deliverables from another team
+                    </div>
+                </div>
+
+                <div class="waste-helper-card" data-letter="N">
+                    <div class="helper-header">
+                        <span class="waste-letter">N</span>
+                        <h3>Non-utilized Talent</h3>
+                    </div>
+                    <p class="helper-question">🤔 Ask yourself:</p>
+                    <ul>
+                        <li>Am I doing tasks that don't use my real skills?</li>
+                        <li>Is there a skill I have that nobody knows about or uses?</li>
+                        <li>Did I see a colleague doing something they're overqualified for?</li>
+                    </ul>
+                    <p class="helper-tip">💡 <strong>Tip:</strong> If you feel bored or under-challenged, that's a signal. If you're doing data entry when you could be analyzing data — that's wasted talent.</p>
+                    <div class="helper-examples">
+                        <strong>Examples:</strong> Engineer doing manual data copying, skilled worker stuck on admin tasks, ideas not solicited from frontline workers
+                    </div>
+                </div>
+
+                <div class="waste-helper-card" data-letter="T">
+                    <div class="helper-header">
+                        <span class="waste-letter">T</span>
+                        <h3>Transportation</h3>
+                    </div>
+                    <p class="helper-question">🤔 Ask yourself:</p>
+                    <ul>
+                        <li>Did I move files/materials between systems unnecessarily?</li>
+                        <li>Did handoffs between people cause delays or confusion?</li>
+                        <li>Was physical material moved more than needed?</li>
+                    </ul>
+                    <p class="helper-tip">💡 <strong>Tip:</strong> In office work, "transportation" = moving information between systems. Copy-pasting between 4 spreadsheets? That's transport waste.</p>
+                    <div class="helper-examples">
+                        <strong>Examples:</strong> Exporting data to email to re-enter elsewhere, walking to a printer far away, multiple approvals across different tools
+                    </div>
+                </div>
+
+                <div class="waste-helper-card" data-letter="I">
+                    <div class="helper-header">
+                        <span class="waste-letter">I</span>
+                        <h3>Inventory</h3>
+                    </div>
+                    <p class="helper-question">🤔 Ask yourself:</p>
+                    <ul>
+                        <li>Do I have a backlog of unread emails or unfinished tasks?</li>
+                        <li>Are there materials, supplies, or files piling up unused?</li>
+                        <li>Am I holding "work in progress" that hasn't moved in days?</li>
+                    </ul>
+                    <p class="helper-tip">💡 <strong>Tip:</strong> Your inbox count, unread Slack messages, and stale to-do items are all "inventory." High inventory = high stress and low flow.</p>
+                    <div class="helper-examples">
+                        <strong>Examples:</strong> 200+ unread emails, 15 open browser tabs from last week, half-done reports waiting for input, excess office supplies
+                    </div>
+                </div>
+
+                <div class="waste-helper-card" data-letter="M">
+                    <div class="helper-header">
+                        <span class="waste-letter">M</span>
+                        <h3>Motion</h3>
+                    </div>
+                    <p class="helper-question">🤔 Ask yourself:</p>
+                    <ul>
+                        <li>Did I have to search for a file, tool, or piece of information?</li>
+                        <li>Did I switch between too many apps/tabs to do one task?</li>
+                        <li>Was my workspace set up so I had to reach/walk unnecessarily?</li>
+                    </ul>
+                    <p class="helper-tip">💡 <strong>Tip:</strong> Motion ≠ Transportation. Motion is YOUR movement. If you're clicking through 7 folders to find a file you use daily, that's motion waste. Put it on your desktop!</p>
+                    <div class="helper-examples">
+                        <strong>Examples:</strong> Searching for files, toggling between apps, walking to get printouts, scrolling through long lists to find data
+                    </div>
+                </div>
+
+                <div class="waste-helper-card" data-letter="E">
+                    <div class="helper-header">
+                        <span class="waste-letter">E</span>
+                        <h3>Extra-processing</h3>
+                    </div>
+                    <p class="helper-question">🤔 Ask yourself:</p>
+                    <ul>
+                        <li>Did I add more detail or formatting than the customer/boss needs?</li>
+                        <li>Am I following a step that adds no value but "we always do it"?</li>
+                        <li>Did I over-engineer a solution when a simpler one would work?</li>
+                    </ul>
+                    <p class="helper-tip">💡 <strong>Tip:</strong> Ask "Would the customer/next person notice if I skipped this step?" If no — it's extra-processing. This is the sneakiest waste because it feels productive.</p>
+                    <div class="helper-examples">
+                        <strong>Examples:</strong> Color-coding a spreadsheet nobody prints, adding 10 approval steps when 2 suffice, writing detailed meeting notes no one reads
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <p>🎯 <strong>Daily practice:</strong> At end of day, spend 2 minutes checking which DOWNTIME wastes you encountered. Over time, you'll spot them in real-time!</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
